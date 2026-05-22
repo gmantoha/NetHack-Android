@@ -87,26 +87,29 @@ SYSOBJ = ioctl.o androidmain.o unixtty.o androidunix.o
 # CC = arm-linux-gcc
 #
 # For cross-compiling with Android NDK
-NDK = /path/to/android-ndk-r21e
+# NDK r26c corresponds to SDK manager version 26.3.11579264.
+# Install with: sdkmanager --install "ndk;26.3.11579264"
+NDK = /path/to/android-ndk-r26c
 
 NDK_TOOLCHAIN = $(NDK)/toolchains/llvm/prebuilt/linux-x86_64/bin
 
-# Choose an ABI
-ABI = armeabi
+# Choose an ABI.  armeabi (without -v7a) was removed in NDK r17 and must not
+# be used.  arm64-v8a is required for all 64-bit devices and is the recommended
+# default.
+ABI = arm64-v8a
 #ABI = armeabi-v7a
-#ABI = arm64-v8a
 #ABI = x86
 #ABI = x86_64
 
-CC_armeabi     = $(NDK_TOOLCHAIN)/armv7a-linux-androideabi30-clang
-LD_armeabi     = $(NDK_TOOLCHAIN)/arm-linux-androideabi-ld
-CC_armeabi-v7a = $(NDK_TOOLCHAIN)/armv7a-linux-androideabi30-clang
+# Compiler wrappers pin the *minimum* API level.  Use API 21 (Android 5.0) to
+# match minSdk in app/build.gradle.
+CC_armeabi-v7a = $(NDK_TOOLCHAIN)/armv7a-linux-androideabi21-clang
 LD_armeabi-v7a = $(NDK_TOOLCHAIN)/arm-linux-androideabi-ld
-CC_arm64-v8a   = $(NDK_TOOLCHAIN)/aarch64-linux-android30-clang
+CC_arm64-v8a   = $(NDK_TOOLCHAIN)/aarch64-linux-android21-clang
 LD_arm64-v8a   = $(NDK_TOOLCHAIN)/aarch64-linux-android-ld
-CC_x86         = $(NDK_TOOLCHAIN)/i686-linux-android30-clang
+CC_x86         = $(NDK_TOOLCHAIN)/i686-linux-android21-clang
 LD_x86         = $(NDK_TOOLCHAIN)/i686-linux-android-ld
-CC_x86_64      = $(NDK_TOOLCHAIN)/x86_64-linux-android30-clang
+CC_x86_64      = $(NDK_TOOLCHAIN)/x86_64-linux-android21-clang
 LD_x86_64      = $(NDK_TOOLCHAIN)/x86_64-linux-android-ld
 
 CC_VAR = CC_$(ABI)
@@ -118,7 +121,7 @@ LINK := $(CC)
 # Compile normally
 CFLAGS = -DANDROID -O2 -g -Wno-format -fsigned-char -fPIC -I../include
 #CFLAGS = -DANDROID -DDEBUG -g -Wno-format -fsigned-char -fPIC -I../include
-LFLAGS = -shared -Wl,--fix-cortex-a8
+LFLAGS = -shared
 
 # LFLAGS = -L/usr/X11R6/lib
 #   OR compile backwards compatible a.out format
