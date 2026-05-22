@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.tbd.NetHack"
 	android:installLocation="auto">
-	<uses-sdk />
+	<!--
+	  WRITE_EXTERNAL_STORAGE grants broad external storage access on Android 9
+	  (API 28) and below.  On Android 10 (API 29) requestLegacyExternalStorage
+	  (set on the application element) provides the same legacy access.  On
+	  Android 11–12L (API 30-32) the permission is still declared so that the
+	  system can enforce scoped-storage policies correctly.  maxSdkVersion="32"
+	  prevents the permission from being requested on Android 13+ where it is
+	  fully replaced by more granular media permissions.
+	-->
 	<uses-permission
-		android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+		android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+		android:maxSdkVersion="32"/>
     <uses-permission android:name="android.permission.INTERNET"/>
 
 	<application
@@ -13,10 +21,12 @@
 		android:icon="@drawable/icon"
 		android:largeHeap="true"
 		android:theme="@android:style/Theme"
-		android:allowBackup="true">
+		android:allowBackup="true"
+		android:requestLegacyExternalStorage="true">
 		<activity
 			android:name="com.tbd.forkfront.ForkFront"
 			android:label="NetHack"
+			android:exported="true"
 			android:windowSoftInputMode="adjustResize|stateAlwaysHidden"
 			android:launchMode="singleTask"
 			android:configChanges="mcc|mnc|locale|keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|fontScale">
@@ -30,7 +40,8 @@
 		</activity>
 		<activity
 			android:name="com.tbd.forkfront.Settings"
-			android:label="NetHack Settings">
+			android:label="NetHack Settings"
+			android:exported="false">
 		</activity>
 	</application>
 </manifest>
